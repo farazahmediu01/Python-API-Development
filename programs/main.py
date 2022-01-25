@@ -55,12 +55,12 @@ def update(id: int, post: Post):
     # post_to_update['content'] = post.content
     # updated_post = find_post(id) # after updation get post from database
     update_post(id, updating_post, post)
-    updated_post = find_post(id)
+    updated_post = find_post(id, my_posts)
     if not updated_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail={"message": f"Post with id: {id} not found"})
     return {"message": "Successfully Updated Post with id: {id}",
-            "data": update_post}
+            "data": updated_post}
 
 # Delete a post
 @app.delete("/post/{id}")
