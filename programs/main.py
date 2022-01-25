@@ -1,23 +1,10 @@
 # from email import contentmanager
 # from lib2to3.pytree import Base  # automatic generated code by fastapi
 # from typing import Optional  # automatic generated code by fastapi
-from urllib import response
-from fastapi import FastAPI, Response, status ,HTTPException
+# from urllib import response
+from fastapi import FastAPI, Response, status, HTTPException
 from pydantic import BaseModel
-from CRUD_functions import find_post, create_post, remove_post
-# # Find a perticular post
-# def find_post(id):
-#     for item in my_posts:
-#         if item['id'] == id:
-#             return item
-#     return False
-
-# # Remove a perticular post.
-# def remove_post(id):
-#     item = find_post(id)
-#     if item:
-#         my_posts.remove(item)
-
+from crud import create_post, find_post, update_post, remove_post
 
 class Post(BaseModel):
     title: str
@@ -35,56 +22,54 @@ my_posts = [{'title': 'post_1', 'content': 'content of post 1', 'id': 1},
 app = FastAPI()
 
 
-# Path operation to get all the posts
 # Get all posts
 @app.get('/posts')
-def get_post():
+def get():
     return {"data": my_posts}
 
-# Path operation to create and save the post in my_posts variable.
+# Create and save post in my_posts variable.
 @app.post("/posts")
-def create_posts(post: Post):
-    # we want to add id by ourself and post object doestn't support item assignment.
-    # new_post = post.dict()
-    # new_post['id'] = len(my_posts) + 1
-    # my_posts.append(new_post)
-
+def create(post: Post):
+    # We want to add id by ourself and post object doestn't support item assignment.
+    new_post = create_post(post.dict(), my_posts)
     return {"Status": "Successfully added post",
-            "data": post}
- 
+            "data": new_post}
 
-# path operation to get a specific post with a specific id.
+# Get one specific Post.
 @app.get("/posts/{id}")
-def get_post(id: int, response: Response):
-    post = find_post(id)
+def get(id: int, response: Response):
+    post = find_post(id, my_posts)
     if not post:
         response.status_code = status.HTTP_404_NOT_FOUND
-        return {"message":f"Post with id: {id} not found."}
+        return {"message": f"Post with id: {id} not found."}
     return post
 
-# path operation for updating a post 
+# Update post
 @app.put("/posts/{id}")
-def update_post(id: int, post: Post, response: Response):
-    post_to_update = find_post(id)
-    if not post_to_update:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
+def update(id: int, post: Post):
+    updating_post = find_post(id, my_posts) # get post from database
+    if not updating_post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail={"message": f"Post with id: {id} not found"})
-    post_to_update['title'] = post.title
-    post_to_update['content'] = post.content
-    update_post = find_post(id)
+    # post_to_update['title'] = post.title
+    # post_to_update['content'] = post.content
+    # updated_post = find_post(id) # after updation get post from database
+    update_post(id, updating_post, post)
+    updated_post = find_post(id)
+    if not updated_post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail={"message": f"Post with id: {id} not found"})
     return {"message": "Successfully Updated Post with id: {id}",
             "data": update_post}
 
-# path operation for deleting a post
+# Delete a post
 @app.delete("/post/{id}")
 def delete_post(id: int):
-    delete_post(id)
-
+    remove_post(id, my_posts)
 
 # Adding path parameter in path operation "{id}" to get a specific post.
 # @app.get("posts/{id}")
 # def get_post():
-
 
 '''
 # Blow is optional filed if user doesn't provide publish filed it set True by default.
