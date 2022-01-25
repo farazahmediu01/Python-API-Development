@@ -4,19 +4,19 @@
 from urllib import response
 from fastapi import FastAPI, Response, status ,HTTPException
 from pydantic import BaseModel
+from CRUD_functions import find_post, create_post, remove_post
+# # Find a perticular post
+# def find_post(id):
+#     for item in my_posts:
+#         if item['id'] == id:
+#             return item
+#     return False
 
-# Find a perticular post
-def find_post(id):
-    for item in my_posts:
-        if item['id'] == id:
-            return item
-    return False
-
-# Remove a perticular post.
-def remove_post(id):
-    item = find_post(id)
-    if item:
-        my_posts.remove(item)
+# # Remove a perticular post.
+# def remove_post(id):
+#     item = find_post(id)
+#     if item:
+#         my_posts.remove(item)
 
 
 class Post(BaseModel):
@@ -45,11 +45,12 @@ def get_post():
 @app.post("/posts")
 def create_posts(post: Post):
     # we want to add id by ourself and post object doestn't support item assignment.
-    new_post = post.dict()
-    new_post['id'] = len(my_posts) + 1
-    my_posts.append(new_post)
+    # new_post = post.dict()
+    # new_post['id'] = len(my_posts) + 1
+    # my_posts.append(new_post)
+
     return {"Status": "Successfully added post",
-            "data": new_post}
+            "data": post}
 
 
 # path operation to get a specific post with a specific id.
