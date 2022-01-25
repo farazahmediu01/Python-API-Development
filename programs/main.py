@@ -51,7 +51,7 @@ def create_posts(post: Post):
 
     return {"Status": "Successfully added post",
             "data": post}
-
+ 
 
 # path operation to get a specific post with a specific id.
 @app.get("/posts/{id}")
