@@ -32,7 +32,7 @@ def get():
 def create(post: Post):
     # We want to add id by ourself and post object doestn't support item assignment.
     new_post = create_post(post.dict(), my_posts)
-    return {"Status": "Successfully created a post with id {id}",
+    return {"message": "Successfully created a post with id {id}",
             "data": new_post}
 
 # Get one specific Post using path parameter.
@@ -41,8 +41,8 @@ def get_post(id: int, response: Response):
     post = find_post(id, my_posts)
     if not post:
         response.status_code = status.HTTP_404_NOT_FOUND
-        return {"detail": f"Post with id number {id} was not found."}
-    return {"status": f"Successfully found post with id {id}.",
+        return {"message": f"Post with id {id} was not found."}
+    return {"message": f"Successfully found post with id {id}.",
             "data": post}
 
 # Update post
@@ -51,7 +51,7 @@ def update(id: int, post: Post):
     get_post = update_post(id, post, my_posts)      # get post from database
     if not get_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail={"detail": f"Post with id number {id} was not found."})
+                            detail={"message": f"Post with id {id} was not found."})
     # post_to_update['title'] = post.title
     # post_to_update['content'] = post.content
     # updated_post = find_post(id) # after updation get post from database
@@ -60,18 +60,18 @@ def update(id: int, post: Post):
     # if not updated_post:
     #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
     #                         detail={"message": f"Post with id: {id} not found"})
-    return {"status": f"Successfully updated post with id {id}.",
+    return {"message": f"Successfully updated post with id {id}.",
             "data": get_post}
 
 # Delete a post
 @app.delete("/posts/{id}")
 def delete_post(id: int):
     deleted_post = remove_post(id, my_posts)
-    if not delete_post:
+    if not deleted_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-        detail={"detail": f"The post with id number {id} was not found."})
+        detail={"message": f"The post with id {id} was not found."})
     
-    return {"status": f"Successfully removed post with id number {id}.",
+    return {"message": f"Successfully removed post with id {id}.",
             "data": deleted_post}
     
 # Adding path parameter in path operation "{id}" to get a specific post.
