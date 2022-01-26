@@ -35,38 +35,41 @@ def create(post: Post):
     return {"Status": "Successfully added post",
             "data": new_post}
 
-# Get one specific Post.
+# Get one specific Post using path parameter.
 @app.get("/posts/{id}")
-def get(id: int, response: Response):
+def get_post(id: int, response: Response):
     post = find_post(id, my_posts)
     if not post:
         response.status_code = status.HTTP_404_NOT_FOUND
-        return {"message": f"Post with id: {id} not found."}
+        return {"detail": f"Post with id number {id} was not found."}
     return post
 
 # Update post
 @app.put("/posts/{id}")
 def update(id: int, post: Post):
-    updating_post = find_post(id, my_posts) # get post from database
-    if not updating_post:
+    get_post = update_post(id, post.dict(), my_posts)      # get post from database
+    if not get_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail={"message": f"Post with id: {id} not found"})
+                            detail={"message": f"Post with id number {id} was not found"})
     # post_to_update['title'] = post.title
     # post_to_update['content'] = post.content
     # updated_post = find_post(id) # after updation get post from database
-    update_post(id, updating_post, post)
-    updated_post = find_post(id, my_posts)
-    if not updated_post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail={"message": f"Post with id: {id} not found"})
-    return {"message": "Successfully Updated Post with id: {id}",
-            "data": updated_post}
+    # update_post(id, updating_post, post)
+    # updated_post = find_post(id, my_posts)
+    # if not updated_post:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+    #                         detail={"message": f"Post with id: {id} not found"})
+    return {"detail": f"Successfully Updated post with id: {id}",
+            "updated post": get_post}
 
 # Delete a post
 @app.delete("/post/{id}")
 def delete_post(id: int):
-    remove_post(id, my_posts)
-
+    deleted_post = remove_post(id, my_posts)
+    if not delete_post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        detail={"detail": f"The post with id number {id} was not found."})
+    
 # Adding path parameter in path operation "{id}" to get a specific post.
 # @app.get("posts/{id}")
 # def get_post():
