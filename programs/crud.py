@@ -23,8 +23,8 @@ def update_post(id, post, database):
 
 # Remove a perticular post.
 def remove_post(id, database):
-    item = find_post(id)
+    item = find_post(id, database)
     if not item:
         return item
-    item = database.pop(id)
+    item = database.pop(id - 1)
     return item

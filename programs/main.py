@@ -32,7 +32,7 @@ def get():
 def create(post: Post):
     # We want to add id by ourself and post object doestn't support item assignment.
     new_post = create_post(post.dict(), my_posts)
-    return {"Status": "Successfully added post",
+    return {"Status": "Successfully created a post with id {id}",
             "data": new_post}
 
 # Get one specific Post using path parameter.
@@ -42,15 +42,16 @@ def get_post(id: int, response: Response):
     if not post:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {"detail": f"Post with id number {id} was not found."}
-    return post
+    return {"status": f"Successfully found post with id {id}.",
+            "data": post}
 
 # Update post
 @app.put("/posts/{id}")
 def update(id: int, post: Post):
-    get_post = update_post(id, post.dict(), my_posts)      # get post from database
+    get_post = update_post(id, post, my_posts)      # get post from database
     if not get_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail={"message": f"Post with id number {id} was not found"})
+                            detail={"detail": f"Post with id number {id} was not found."})
     # post_to_update['title'] = post.title
     # post_to_update['content'] = post.content
     # updated_post = find_post(id) # after updation get post from database
@@ -59,16 +60,19 @@ def update(id: int, post: Post):
     # if not updated_post:
     #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
     #                         detail={"message": f"Post with id: {id} not found"})
-    return {"detail": f"Successfully Updated post with id: {id}",
-            "updated post": get_post}
+    return {"status": f"Successfully updated post with id {id}.",
+            "data": get_post}
 
 # Delete a post
-@app.delete("/post/{id}")
+@app.delete("/posts/{id}")
 def delete_post(id: int):
     deleted_post = remove_post(id, my_posts)
     if not delete_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
         detail={"detail": f"The post with id number {id} was not found."})
+    
+    return {"status": f"Successfully removed post with id number {id}.",
+            "data": deleted_post}
     
 # Adding path parameter in path operation "{id}" to get a specific post.
 # @app.get("posts/{id}")
